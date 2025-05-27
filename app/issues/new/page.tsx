@@ -1,5 +1,5 @@
 "use client";
-import { Button, Callout, TextField } from '@radix-ui/themes'
+import { Button, Callout, Text, TextField } from '@radix-ui/themes'
 //import SimpleMDE from "react-simplemde-editor";
 
 
@@ -12,16 +12,19 @@ import "easymde/dist/easymde.min.css";
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { createIssueSchema } from '@/app/createIssueSchema';
 
-interface IssueForm {
-  title:String;
-  description:string;
-}
+import {z} from "zod";
+
+type IssueForm=z.infer<typeof createIssueSchema>;
 
 
 const newIssuesPage = () => {
   const router=useRouter();
-  const {register,control,handleSubmit}=useForm<IssueForm>();
+  const {register,control,handleSubmit,formState: { errors }}=useForm<IssueForm>(
+    {resolver:zodResolver(createIssueSchema)}
+  );
 
   const [error,setError]=useState("");
   //console.log(register("title"));
@@ -43,11 +46,12 @@ const newIssuesPage = () => {
 })}>
         <TextField.Root placeholder="Title" {...register("title")}>
         </TextField.Root>
+        {errors.title && <Text color='red' >Title is required</Text>}
         <Controller name="description" control={control}
         render={(
           { field }) => < SimpleMDE placeholder="Description" { ...field } />} 
         />
-        
+        {errors.description && <Text color="red" as="p">Description is required</Text>}
         <Button>Submit New Issue</Button>
     </form>
     </div>
