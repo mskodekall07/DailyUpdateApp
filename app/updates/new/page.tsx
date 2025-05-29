@@ -13,19 +13,19 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createIssueSchema } from '@/app/validationSchema';
+import { createUpdateSchema } from '@/app/validationSchema';
 
 import {z} from "zod";
 import ErrorMessage from '@/app/components/ErrorMessage';
 import Spinner from '@/app/components/Spinner';
 
-type IssueForm=z.infer<typeof createIssueSchema>;
+type IssueForm=z.infer<typeof createUpdateSchema>;
 
 
 const newIssuesPage = () => {
   const router=useRouter();
   const {register,control,handleSubmit,formState: { errors }}=useForm<IssueForm>(
-    {resolver:zodResolver(createIssueSchema)}
+    {resolver:zodResolver(createUpdateSchema)}
   );
 
   const [error,setError]=useState("");
@@ -34,8 +34,8 @@ const newIssuesPage = () => {
   const onSubmit=handleSubmit(async (data)=>{ 
     try {
       setIsSubmitting(true);
-      await axios.post("/api/issues",data);
-      router.push("/issues");
+      await axios.post("/api/updates",data);
+      router.push("/updates");
       
       
     } catch (error) {
@@ -62,7 +62,7 @@ const newIssuesPage = () => {
         />
       <ErrorMessage>{errors.description?.message}</ErrorMessage>
         <Button disabled={isSubmitting}>
-          Submit New Issue { isSubmitting &&< Spinner />}
+          Submit New Update { isSubmitting &&< Spinner />}
         </Button>
     </form>
     </div>
